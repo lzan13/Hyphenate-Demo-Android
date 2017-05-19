@@ -130,6 +130,13 @@ public class VideoCallActivity extends CallActivity {
         mLocalSurfaceView.setZOrderMediaOverlay(true);
         mLocalSurfaceView.setZOrderOnTop(true);
 
+        // Set local and opposite SurfaceView
+        EMClient.getInstance()
+                .callManager()
+                .setSurfaceView(mLocalSurfaceView, mOppositeSurfaceView);
+        mCameraDataProcessor = new CameraDataProcessor();
+        // Set video call data processor
+        EMClient.getInstance().callManager().setCameraDataProcessor(mCameraDataProcessor);
         try {
             // By default, the front camera is used
             EMClient.getInstance()
@@ -138,15 +145,6 @@ public class VideoCallActivity extends CallActivity {
         } catch (HyphenateException e) {
             e.printStackTrace();
         }
-
-        // Set local and opposite SurfaceView
-        EMClient.getInstance()
-                .callManager()
-                .setSurfaceView(mLocalSurfaceView, mOppositeSurfaceView);
-
-        mCameraDataProcessor = new CameraDataProcessor();
-        // Set video call data processor
-        EMClient.getInstance().callManager().setCameraDataProcessor(mCameraDataProcessor);
 
         // Check call state
         if (CallStatus.getInstance().getCallState() == CallStatus.CALL_STATUS_NORMAL) {
