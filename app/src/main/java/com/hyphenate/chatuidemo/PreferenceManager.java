@@ -158,7 +158,7 @@ public class PreferenceManager {
 	public boolean isPushCall() {
 		return mSharedPreferences.getBoolean(SHARED_KEY_SETTING_OFFLINE_PUSH_CALL, false);
 	}
-    
+
 	public void setGroupsSynced(boolean synced){
 	    editor.putBoolean(SHARED_KEY_SETTING_GROUPS_SYNCED, synced);
         editor.apply();
@@ -231,6 +231,12 @@ public class PreferenceManager {
 		return mSharedPreferences.getString(SHARED_KEY_IM_SERVER, null);
 	}
 
+	public void setIMPort(String port) {
+
+	}
+	public String getIMPort() {
+		return mSharedPreferences.getString(SHARED_KEY_IM_SERVER, null);
+	}
 	public void enableCustomServer(boolean enable){
 		editor.putBoolean(SHARED_KEY_ENABLE_CUSTOM_SERVER, enable);
 		editor.apply();

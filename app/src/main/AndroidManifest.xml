@@ -70,6 +70,13 @@
             android:name=".sign.SignUpActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <!--Private information configuration activity-->
+        <activity
+            android:name=".sign.PrivateConfigActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+
         <!--Video call activity-->
         <activity
             android:name=".call.VideoCallActivity"
@@ -177,9 +184,10 @@
         <service
             android:name="com.hyphenate.chat.EMChatService"
             android:exported="true"/>
-        <service android:name="com.hyphenate.chat.EMJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
+        <service
+            android:name="com.hyphenate.chat.EMJobService"
             android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             />
         <!-- SDK receiver -->
         <receiver android:name="com.hyphenate.chat.EMMonitorReceiver">
@@ -206,7 +214,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="33bb2bc04d2ed7f91da02025c362279e3406ed81" />
+            android:value="33bb2bc04d2ed7f91da02025c362279e3406ed81"/>
     </application>
 
 </manifest>

@@ -69,6 +69,11 @@ public class SignInActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    @OnClick(R.id.btn_private_config) void privateConfig() {
+        Intent intent = new Intent(mActivity, PrivateConfigActivity.class);
+        startActivity(intent);
+    }
+
     /**
      * Verify the input information, Call sign in
      */
@@ -200,11 +205,9 @@ public class SignInActivity extends BaseActivity {
                         }
 
                         if (!NetUtils.hasNetwork(mActivity)) {
-                            Toast.makeText(mActivity, R.string.em_error_network_error,
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(mActivity, R.string.em_error_network_error, Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(mActivity, error + "-" + i + "-" + s, Toast.LENGTH_LONG)
-                                    .show();
+                            Toast.makeText(mActivity, error + "-" + i + "-" + s, Toast.LENGTH_LONG).show();
                         }
                     }
                 });

@@ -9,48 +9,42 @@
     android:background="@color/dark_background"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:padding="@dimen/activity_padding"
     tools:context=".sign.SignInActivity"
     >
 
     <!--Include communal Toolbar-->
-    <!--<include layout="@layout/em_widget_toolbar_communal"/>-->
+    <include layout="@layout/em_widget_toolbar_communal"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             >
-
             <LinearLayout
-                android:id="@+id/layout_sign_in_form"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="16dp"
-                android:gravity="center"
                 android:orientation="vertical"
                 >
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/logo_margin"
-                    android:src="@drawable/em_logo_green"
-                    />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/activity_vertical_margin"
-                    android:text="@string/em_hint_sign_in"
-                    android:textColor="@color/sign_text_white"
-                    android:textSize="16sp"
+                    android:text="Restart the app after saving"
+                    android:textColor="@color/em_white_100"
                     />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Private im server"
+                    android:textColor="#d8d8d8"
+                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -60,10 +54,10 @@
                     >
 
                     <EditText
-                        android:id="@+id/edt_account"
+                        android:id="@+id/edit_im_server"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/em_hint_account"
+                        android:hint="im1.easemob.com"
                         android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"
@@ -71,6 +65,13 @@
                         />
                 </android.support.design.widget.TextInputLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Private im port"
+                    android:textColor="#d8d8d8"
+                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,80 +81,79 @@
                     >
 
                     <EditText
-                        android:id="@+id/edt_password"
+                        android:id="@+id/edit_im_port"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/em_hint_password"
-                        android:inputType="textPassword"
+                        android:hint="443"
+                        android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"
                         android:textSize="16sp"
                         />
                 </android.support.design.widget.TextInputLayout>
 
-                <Button
-                    android:id="@+id/btn_sign_in"
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/btn_height_small"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/em_btn_rectangle_green"
-                    android:text="@string/em_sign_in"
-                    android:textColor="@color/sign_text_white"
-                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Private rest server and port"
+                    android:textColor="#d8d8d8"
                     />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/sign_text_white"
+                    android:textColorHint="@color/sign_text_hint"
                     >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/edit_rest_server_and_port"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/em_hint_dont_have_account"
-                        android:textColor="@color/sign_text_hint"
-                        android:textSize="14sp"
-                        />
-
-                    <Button
-                        android:id="@+id/btn_sign_up"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:text="@string/em_sign_up"
+                        android:hint="a1.easemob.com:80"
+                        android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
-                        android:textSize="14sp"
+                        android:textColorHint="@color/sign_text_hint"
+                        android:textSize="16sp"
                         />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:text="set custom appkey"
+                    android:textColor="#d8d8d8"
+                    />
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/sign_text_white"
+                    android:textColorHint="@color/sign_text_hint"
                     >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/edit_custom_appkey"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Private project？"
-                        android:textColor="@color/sign_text_hint"
-                        android:textSize="14sp"
-                        />
-
-                    <Button
-                        android:id="@+id/btn_private_config"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:text="Private Config"
+                        android:hint="hyphenatedemo#hyphenatedemo"
+                        android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
-                        android:textSize="14sp"
+                        android:textColorHint="@color/sign_text_hint"
+                        android:textSize="16sp"
                         />
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
+                <Button
+                    android:id="@+id/btn_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/em_btn_rectangle_green"
+                    android:text="Save private config"
+                    android:textColor="@color/em_white_87"
+                    />
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </RelativeLayout>
