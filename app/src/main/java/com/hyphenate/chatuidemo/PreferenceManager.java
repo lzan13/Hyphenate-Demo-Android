@@ -47,6 +47,7 @@ public class PreferenceManager {
 
 	private static String SHARED_KEY_REST_SERVER = "SHARED_KEY_REST_SERVER";
 	private static String SHARED_KEY_IM_SERVER = "SHARED_KEY_IM_SERVER";
+	private static String SHARED_KEY_IM_PORT = "SHARED_KEY_IM_PORT";
 	private static String SHARED_KEY_ENABLE_CUSTOM_SERVER = "SHARED_KEY_ENABLE_CUSTOM_SERVER";
 	private static String SHARED_KEY_ENABLE_CUSTOM_APPKEY = "SHARED_KEY_ENABLE_CUSTOM_APPKEY";
 	private static String SHARED_KEY_CUSTOM_APPKEY = "SHARED_KEY_CUSTOM_APPKEY";
@@ -232,10 +233,11 @@ public class PreferenceManager {
 	}
 
 	public void setIMPort(String port) {
-
+		editor.putString(SHARED_KEY_IM_PORT, port);
+		editor.commit();
 	}
 	public String getIMPort() {
-		return mSharedPreferences.getString(SHARED_KEY_IM_SERVER, null);
+		return mSharedPreferences.getString(SHARED_KEY_IM_PORT, null);
 	}
 	public void enableCustomServer(boolean enable){
 		editor.putBoolean(SHARED_KEY_ENABLE_CUSTOM_SERVER, enable);

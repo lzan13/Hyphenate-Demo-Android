@@ -38,17 +38,9 @@
                     android:textColor="@color/em_white_100"
                     />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Private im server"
-                    android:textColor="#d8d8d8"
-                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:textColor="@color/sign_text_white"
                     android:textColorHint="@color/sign_text_hint"
                     >
@@ -57,7 +49,7 @@
                         android:id="@+id/edit_im_server"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="im1.easemob.com"
+                        android:hint="Private im server"
                         android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"
@@ -65,17 +57,9 @@
                         />
                 </android.support.design.widget.TextInputLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Private im port"
-                    android:textColor="#d8d8d8"
-                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:textColor="@color/sign_text_white"
                     android:textColorHint="@color/sign_text_hint"
                     >
@@ -84,7 +68,7 @@
                         android:id="@+id/edit_im_port"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="443"
+                        android:hint="Private im port"
                         android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"
@@ -92,17 +76,9 @@
                         />
                 </android.support.design.widget.TextInputLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Private rest server and port"
-                    android:textColor="#d8d8d8"
-                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:textColor="@color/sign_text_white"
                     android:textColorHint="@color/sign_text_hint"
                     >
@@ -111,7 +87,7 @@
                         android:id="@+id/edit_rest_server_and_port"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="a1.easemob.com:80"
+                        android:hint="Private rest server and port"
                         android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"
@@ -119,17 +95,9 @@
                         />
                 </android.support.design.widget.TextInputLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="set custom appkey"
-                    android:textColor="#d8d8d8"
-                    />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:textColor="@color/sign_text_white"
                     android:textColorHint="@color/sign_text_hint"
                     >
@@ -138,7 +106,7 @@
                         android:id="@+id/edit_custom_appkey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="hyphenatedemo#hyphenatedemo"
+                        android:hint="set custom appkey"
                         android:inputType="textImeMultiLine"
                         android:textColor="@color/sign_text_white"
                         android:textColorHint="@color/sign_text_hint"

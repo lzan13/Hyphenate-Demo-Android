@@ -137,7 +137,7 @@ public class DemoHelper {
                 options.setImPort(Integer.valueOf(port));
             }
             // set private rest server and port
-            options.setRestServer("a1.easemob.com:80");
+            options.setRestServer(PreferenceManager.getInstance().getRestServer());
         }
         if (!TextUtils.isEmpty(PreferenceManager.getInstance().getCustomAppkey())) {
             // set Appkey

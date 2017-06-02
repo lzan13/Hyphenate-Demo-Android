@@ -42,6 +42,7 @@ public class PrivateConfigActivity extends BaseActivity {
         activity = this;
 
         getActionBarToolbar().setNavigationIcon(R.drawable.em_ic_back);
+        getActionBarToolbar().setTitle("Private config");
         getActionBarToolbar().setNavigationOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 finish();
