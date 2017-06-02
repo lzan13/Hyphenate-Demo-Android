@@ -34,6 +34,12 @@ android {
         multiDexEnabled true
     }
     buildTypes {
+        debug {
+            // filter so
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
