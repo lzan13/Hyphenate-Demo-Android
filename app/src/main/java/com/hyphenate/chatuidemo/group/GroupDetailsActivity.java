@@ -180,10 +180,7 @@ public class GroupDetailsActivity extends BaseActivity {
                 if (data != null) {
                     List<String> list = data.getStringArrayListExtra("selectedMembers");
                     members.clear();
-                    if (!group.getMembers().contains(list.get(0))) {
-                        members.addAll(group.getMembers());
-                    }
-                    members.addAll(list);
+                    members.addAll(group.getMembers());
                     memberSizeView.setText("(" + members.size() + ")");
                     adapter.notifyDataSetChanged();
                 }
