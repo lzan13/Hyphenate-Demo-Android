@@ -836,6 +836,9 @@ public class ChatActivity extends BaseActivity {
         if (groupChangeListener != null) {
             EMClient.getInstance().groupManager().removeGroupChangeListener(groupChangeListener);
         }
+        if (chatRoomChangeListener != null) {
+            EMClient.getInstance().chatroomManager().removeChatRoomListener(chatRoomChangeListener);
+        }
         if (chatType == EaseConstant.CHATTYPE_CHATROOM) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(toChatUsername);
         }
@@ -866,6 +869,78 @@ public class ChatActivity extends BaseActivity {
     }
 
     private class DefaultChatRoomChangeListener extends ChatRoomChangeListener {
+        @Override public void onChatRoomDestroyed(String roomId, String roomName) {
+            super.onChatRoomDestroyed(roomId, roomName);
+            finish();
+        }
 
+        @Override public void onMemberJoined(String roomId, final String participant) {
+            super.onMemberJoined(roomId, participant);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, participant + " joined", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onMemberExited(String roomId, String roomName, final String participant) {
+            super.onMemberExited(roomId, roomName, participant);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, participant + " exited", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
+            super.onRemovedFromChatRoom(roomId, roomName, participant);
+            finish();
+        }
+
+        @Override public void onMuteListAdded(String chatRoomId, final List<String> mutes, long expireTime) {
+            super.onMuteListAdded(chatRoomId, mutes, expireTime);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, mutes.get(0) + " is muted", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onMuteListRemoved(String chatRoomId, final List<String> mutes) {
+            super.onMuteListRemoved(chatRoomId, mutes);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, mutes.get(0) + " is unmuted", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onAdminAdded(String chatRoomId, final String admin) {
+            super.onAdminAdded(chatRoomId, admin);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, admin + "  administrator privileges are added", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onAdminRemoved(String chatRoomId, final String admin) {
+            super.onAdminRemoved(chatRoomId, admin);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, admin + " administrator privileges are canceled", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onOwnerChanged(String chatRoomId, final String newOwner, final String oldOwner) {
+            super.onOwnerChanged(chatRoomId, newOwner, oldOwner);
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activityInstance, oldOwner + " transferred ownership to " + newOwner, Toast.LENGTH_LONG)
+                            .show();
+                }
+            });
+        }
     }
 }

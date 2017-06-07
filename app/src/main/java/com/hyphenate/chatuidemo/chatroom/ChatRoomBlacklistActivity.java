@@ -27,6 +27,7 @@ import java.util.List;
 public class ChatRoomBlacklistActivity extends BaseActivity {
 
     private ChatRoomBlacklistActivity activity;
+    private DefaultChatRoomChangeListener chatRoomChangeListener;
 
     @BindView(R.id.recycler_chatroom_members) RecyclerView recyclerView;
 
@@ -68,6 +69,9 @@ public class ChatRoomBlacklistActivity extends BaseActivity {
         updateChatRoomData();
 
         setItemClickListener();
+
+        chatRoomChangeListener = new DefaultChatRoomChangeListener();
+        EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomChangeListener);
     }
 
     /**
@@ -173,4 +177,26 @@ public class ChatRoomBlacklistActivity extends BaseActivity {
             }
         }
     };
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        if (chatRoomChangeListener != null) {
+            EMClient.getInstance().chatroomManager().removeChatRoomListener(chatRoomChangeListener);
+        }
+    }
+
+    /**
+     * chatroom change listener
+     */
+    private class DefaultChatRoomChangeListener extends ChatRoomChangeListener {
+        @Override public void onChatRoomDestroyed(String roomId, String roomName) {
+            super.onChatRoomDestroyed(roomId, roomName);
+            finish();
+        }
+
+        @Override public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
+            super.onRemovedFromChatRoom(roomId, roomName, participant);
+            finish();
+        }
+    }
 }

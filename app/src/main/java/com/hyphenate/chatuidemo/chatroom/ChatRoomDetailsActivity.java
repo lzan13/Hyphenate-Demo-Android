@@ -1,8 +1,11 @@
 package com.hyphenate.chatuidemo.chatroom;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -17,6 +20,7 @@ import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chatuidemo.R;
+import com.hyphenate.chatuidemo.chat.ChatActivity;
 import com.hyphenate.chatuidemo.ui.BaseActivity;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.exceptions.HyphenateException;
@@ -29,6 +33,7 @@ import java.util.List;
 public class ChatRoomDetailsActivity extends BaseActivity {
 
     private ChatRoomDetailsActivity activity;
+    private DefaultChatRoomChangeListener chatRoomChangeListener;
 
     @BindView(R.id.text_chatroom_name) TextView chatRoomNameView;
     @BindView(R.id.text_chatroom_id) TextView chatRoomIdView;
@@ -49,6 +54,7 @@ public class ChatRoomDetailsActivity extends BaseActivity {
     private AlertDialog.Builder changeChatRoomDialog;
     private AlertDialog.Builder clearMessageDialog;
     private AlertDialog.Builder destroyChatRoomDialog;
+    private ProgressDialog progressDialog;
 
     @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +78,15 @@ public class ChatRoomDetailsActivity extends BaseActivity {
         currentUser = EMClient.getInstance().getCurrentUser();
         chatRoomId = getIntent().getStringExtra(EaseConstant.EXTRA_CHATROOM_ID);
         chatRoom = EMClient.getInstance().chatroomManager().getChatRoom(chatRoomId);
-        adminList = chatRoom.getAdminList();
 
+        updateChatRoomData();
+
+        chatRoomChangeListener = new DefaultChatRoomChangeListener();
+        EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomChangeListener);
+    }
+
+    private void refreshUI() {
+        adminList = chatRoom.getAdminList();
         if (chatRoom != null) {
             chatRoomNameView.setText(chatRoom.getName());
             chatRoomIdView.setText(chatRoom.getId());
@@ -115,6 +128,42 @@ public class ChatRoomDetailsActivity extends BaseActivity {
             case R.id.layout_destroy_chatroom:
                 destroyChatRoom();
                 break;
+        }
+    }
+
+    /**
+     * Update chat room data from server
+     */
+    private void updateChatRoomData() {
+        // fetch members from server
+        new Thread(new Runnable() {
+            @Override public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        showProgressDialog();
+                    }
+                });
+                try {
+                    chatRoom = EMClient.getInstance().chatroomManager().fetchChatRoomFromServer(chatRoomId, true);
+                    handler.sendMessage(handler.obtainMessage(0));
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * show progress dialog
+     */
+    private void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(activity);
+            progressDialog.setMessage("Please waiting...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        if (!progressDialog.isShowing()) {
+            progressDialog.show();
         }
     }
 
@@ -269,6 +318,10 @@ public class ChatRoomDetailsActivity extends BaseActivity {
                                             + e.getErrorCode()
                                             + " message: "
                                             + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    finish();
+                                    if (ChatActivity.activityInstance != null) {
+                                        ChatActivity.activityInstance.finish();
+                                    }
                                 }
                             });
                             e.printStackTrace();
@@ -286,5 +339,79 @@ public class ChatRoomDetailsActivity extends BaseActivity {
 
     @Override protected void onDestroy() {
         super.onDestroy();
+        if (chatRoomChangeListener != null) {
+            EMClient.getInstance().chatroomManager().removeChatRoomListener(chatRoomChangeListener);
+        }
+    }
+
+    // refresh ui handler
+    Handler handler = new Handler() {
+        @Override public void handleMessage(Message msg) {
+            //super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    refreshUI();
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                    break;
+            }
+        }
+    };
+
+    /**
+     * chatroom change listener
+     */
+    private class DefaultChatRoomChangeListener extends ChatRoomChangeListener {
+        @Override public void onChatRoomDestroyed(String roomId, String roomName) {
+            super.onChatRoomDestroyed(roomId, roomName);
+            finish();
+        }
+
+        @Override public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
+            super.onRemovedFromChatRoom(roomId, roomName, participant);
+            finish();
+        }
+
+        @Override public void onMemberJoined(String roomId, final String participant) {
+            super.onMemberJoined(roomId, participant);
+            updateChatRoomData();
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activity, participant + " joined", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onMemberExited(String roomId, String roomName, final String participant) {
+            super.onMemberExited(roomId, roomName, participant);
+            updateChatRoomData();
+            runOnUiThread(new Runnable() {
+                @Override public void run() {
+                    Toast.makeText(activity, participant + " exited", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @Override public void onAdminAdded(String chatRoomId, final String admin) {
+            super.onAdminAdded(chatRoomId, admin);
+            if (admin.equals(currentUser)) {
+                updateChatRoomData();
+            }
+        }
+
+        @Override public void onAdminRemoved(String chatRoomId, final String admin) {
+            super.onAdminRemoved(chatRoomId, admin);
+            if (admin.equals(currentUser)) {
+                updateChatRoomData();
+            }
+        }
+
+        @Override public void onOwnerChanged(String chatRoomId, final String newOwner, final String oldOwner) {
+            super.onOwnerChanged(chatRoomId, newOwner, oldOwner);
+            if (newOwner.equals(currentUser) || oldOwner.equals(currentUser)) {
+                updateChatRoomData();
+            }
+        }
     }
 }

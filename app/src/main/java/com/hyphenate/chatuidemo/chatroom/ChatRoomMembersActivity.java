@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.hyphenate.chat.EMChatRoom;
@@ -18,10 +19,8 @@ import com.hyphenate.chatuidemo.R;
 import com.hyphenate.chatuidemo.ui.BaseActivity;
 import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.exceptions.HyphenateException;
-import com.hyphenate.util.EMLog;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by lzan13 on 2017/6/1.
@@ -32,6 +31,7 @@ public class ChatRoomMembersActivity extends BaseActivity {
     private String TAG = this.getClass().getSimpleName();
 
     private ChatRoomMembersActivity activity;
+    private DefaultChatRoomChangeListener chatRoomChangeListener;
 
     @BindView(R.id.recycler_chatroom_members) RecyclerView recyclerView;
 
@@ -78,6 +78,9 @@ public class ChatRoomMembersActivity extends BaseActivity {
         recyclerView.setAdapter(adapter);
 
         updateChatRoomData();
+
+        chatRoomChangeListener = new DefaultChatRoomChangeListener();
+        EMClient.getInstance().chatroomManager().addChatRoomChangeListener(chatRoomChangeListener);
     }
 
     /**
@@ -252,4 +255,61 @@ public class ChatRoomMembersActivity extends BaseActivity {
             }
         }
     };
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        if (chatRoomChangeListener != null) {
+            EMClient.getInstance().chatroomManager().removeChatRoomListener(chatRoomChangeListener);
+        }
+    }
+
+    /**
+     * chatroom change listener
+     */
+    private class DefaultChatRoomChangeListener extends ChatRoomChangeListener {
+        @Override public void onChatRoomDestroyed(String roomId, String roomName) {
+            super.onChatRoomDestroyed(roomId, roomName);
+            finish();
+        }
+
+        @Override public void onRemovedFromChatRoom(String roomId, String roomName, String participant) {
+            super.onRemovedFromChatRoom(roomId, roomName, participant);
+            finish();
+        }
+
+        @Override public void onMemberJoined(String roomId, String participant) {
+            super.onMemberJoined(roomId, participant);
+            updateChatRoomData();
+        }
+
+        @Override public void onMemberExited(String roomId, String roomName, String participant) {
+            super.onMemberExited(roomId, roomName, participant);
+            updateChatRoomData();
+        }
+
+        @Override public void onMuteListAdded(String chatRoomId, List<String> mutes, long expireTime) {
+            super.onMuteListAdded(chatRoomId, mutes, expireTime);
+            updateChatRoomData();
+        }
+
+        @Override public void onMuteListRemoved(String chatRoomId, List<String> mutes) {
+            super.onMuteListRemoved(chatRoomId, mutes);
+            updateChatRoomData();
+        }
+
+        @Override public void onAdminAdded(String chatRoomId, String admin) {
+            super.onAdminAdded(chatRoomId, admin);
+            updateChatRoomData();
+        }
+
+        @Override public void onAdminRemoved(String chatRoomId, String admin) {
+            super.onAdminRemoved(chatRoomId, admin);
+            updateChatRoomData();
+        }
+
+        @Override public void onOwnerChanged(String chatRoomId, String newOwner, String oldOwner) {
+            super.onOwnerChanged(chatRoomId, newOwner, oldOwner);
+            updateChatRoomData();
+        }
+    }
 }
