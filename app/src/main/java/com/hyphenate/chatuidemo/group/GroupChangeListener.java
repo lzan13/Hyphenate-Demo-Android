@@ -5,6 +5,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.chatuidemo.Constant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -14,12 +15,12 @@ import java.util.UUID;
 public abstract class GroupChangeListener implements EMGroupChangeListener {
 
     /*!
-     * current user receive group invitation
-     * @param s The group ID.
-     * @param s1 group's name
-     * @param s2 Who invite you join the group
-     * @param s3 Literal message coming with the invitation
-     */
+         * current user receive group invitation
+         * @param s The group ID.
+         * @param s1 group's name
+         * @param s2 Who invite you join the group
+         * @param s3 Literal message coming with the invitation
+         */
     @Override public void onInvitationReceived(String s, String s1, String s2, String s3) {
         String msgId = s2 + s + EMClient.getInstance().getCurrentUser();
         EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
@@ -274,5 +275,33 @@ public abstract class GroupChangeListener implements EMGroupChangeListener {
         msg.setStatus(EMMessage.Status.SUCCESS);
         // save invitation as messages
         EMClient.getInstance().chatManager().saveMessage(msg);
+    }
+
+    @Override public void onMuteListAdded(String s, List<String> list, long l) {
+
+    }
+
+    @Override public void onMuteListRemoved(String s, List<String> list) {
+
+    }
+
+    @Override public void onAdminAdded(String s, String s1) {
+
+    }
+
+    @Override public void onAdminRemoved(String s, String s1) {
+
+    }
+
+    @Override public void onOwnerChanged(String s, String s1, String s2) {
+
+    }
+
+    @Override public void onMemberJoined(String s, String s1) {
+
+    }
+
+    @Override public void onMemberExited(String s, String s1) {
+
     }
 }

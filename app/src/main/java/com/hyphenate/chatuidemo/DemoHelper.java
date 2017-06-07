@@ -125,6 +125,8 @@ public class DemoHelper {
         // set init sdk options
         EMOptions options = new EMOptions();
 
+        options.setAppKey("easemob-demo#chatdemoui");
+
         if (!TextUtils.isEmpty(PreferenceManager.getInstance().getIMServer()) && !TextUtils.isEmpty(
                 PreferenceManager.getInstance().getRestServer())) {
             // Whether to start the DNS information configuration, if it is privatization deployment, here to set to false
@@ -155,9 +157,12 @@ public class DemoHelper {
         options.setAutoAcceptGroupInvitation(
                 preferences.getBoolean(mContext.getString(R.string.em_pref_key_accept_group_invite_automatically), false));
 
+        // set message crypto algorithm
+        options.setCryptoAlgorithm(EMOptions.EM_CRYPTO_ALGORITHM.EM_CRYPTO_AES);
         //set gcm project number
         options.setGCMNumber("324169311137");
-
+        //you need apply & set your own id if you want to use Mi push notification
+        options.setMipushConfig("2882303761517426801", "5381742660801");
         return options;
     }
 
