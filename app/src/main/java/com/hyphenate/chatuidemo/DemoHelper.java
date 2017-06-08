@@ -148,6 +148,8 @@ public class DemoHelper {
 
         // change to need confirm contact invitation
         options.setAcceptInvitationAlways(false);
+        // set auto accept group invitation is false
+        options.setAutoAcceptGroupInvitation(false);
         // set if need read ack
         options.setRequireAck(true);
         // set if need delivery ack
@@ -619,3 +621,4 @@ public class DemoHelper {
         return null;
     }
 }
+

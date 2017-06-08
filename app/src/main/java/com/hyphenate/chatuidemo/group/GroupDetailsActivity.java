@@ -296,7 +296,7 @@ public class GroupDetailsActivity extends BaseActivity {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    group = EMClient.getInstance().groupManager().getGroupFromServer(groupId);
+                    group = EMClient.getInstance().groupManager().getGroupFromServer(groupId, true);
 
                     runOnUiThread(new Runnable() {
                         public void run() {

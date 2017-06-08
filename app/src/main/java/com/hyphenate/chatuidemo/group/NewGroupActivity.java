@@ -122,6 +122,7 @@ public class NewGroupActivity extends BaseActivity {
 
                             EMGroupManager.EMGroupOptions options = new EMGroupManager.EMGroupOptions();
                             options.maxUsers = 200;
+                            options.inviteNeedConfirm = true;
                             if (groupTypeSwitch.isChecked()) {
                                 if (inviteSwitch.isChecked()) {
                                     options.style = EMGroupManager.EMGroupStyle.EMGroupStylePublicOpenJoin;
