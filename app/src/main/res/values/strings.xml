@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Hyphenate Demo</string>
+    <string name="app_name">Test Demo</string>
 
     <!--hint string-->
     <string name="em_hint_account">Account</string>
@@ -202,7 +202,7 @@
     <string name="not_connect_to_server">Not connect to server, please try again later</string>
 
     <!-- account -->
-    <string name="account_item_name_id">Hyphenate ID</string>
+    <string name="account_item_name_id">ID</string>
     <string name="account_item_name_nick">Nickname</string>
     <string name="account_title_upload_photo">Upload Photo</string>
     <string name="account_msg_local_upload">Upload photo</string>

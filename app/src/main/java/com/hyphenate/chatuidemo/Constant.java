@@ -18,6 +18,14 @@ public class Constant extends EaseConstant{
     public static final String MESSAGE_ATTR_GROUP_TYPE = "em_group_type";
 
 
+    // 草稿
+    public static final String ATTR_DRAFT = "attr_draft";
+    // 最后时间
+    public static final String ATTR_LAST_TIME = "attr_list_time";
+    // 置顶
+    public static final String ATTR_PUSHPIN = "attr_pushpin";
+
+
     public static final String ACCOUNT_CONFLICT = "conflict";
 
     // Broadcast action

@@ -2,14 +2,12 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ml_layout_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/em_white_87"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    tools:context=".sign.SignInActivity"
     >
 
     <!--Include communal Toolbar-->
@@ -170,21 +168,6 @@
                 />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-            <Button
-                android:id="@+id/btn_verify"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/em_btn_rectangle_white"
-                android:gravity="left|center_vertical"
-                android:paddingLeft="@dimen/account_item_padding"
-                android:text="verify"
-                android:textColor="@color/em_red_87"
-                />
-        </RelativeLayout>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

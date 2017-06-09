@@ -216,6 +216,11 @@ public class SignInActivity extends BaseActivity {
         });
     }
 
+    @OnClick(R.id.btn_private_config) void privateConfig() {
+        Intent intent = new Intent(mActivity, PrivateConfigActivity.class);
+        startActivity(intent);
+    }
+
     @Override protected void onDestroy() {
         super.onDestroy();
     }

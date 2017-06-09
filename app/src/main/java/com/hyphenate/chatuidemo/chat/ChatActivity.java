@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -76,6 +77,8 @@ public class ChatActivity extends BaseActivity {
     @BindView(R.id.input_view) ChatInputView mInputView;
     @BindView(R.id.message_list) EaseMessageListView mMessageListView;
     @BindView(R.id.pb_loading_message) ProgressBar mLoadingProgressBar;
+
+    private EditText mInputEditText;
 
     // Group change listener
     private DefaultGroupChangeListener groupChangeListener;
@@ -162,6 +165,14 @@ public class ChatActivity extends BaseActivity {
             initChatRoom();
         }
         // received messages code in onResume() method
+
+        if (mConversation != null) {
+            // 检查是否有草稿没有发出
+            String draft = ConversationExtUtils.getConversationDraft(mConversation);
+            if (!TextUtils.isEmpty(draft)) {
+                mInputEditText.setText(draft);
+            }
+        }
     }
 
     private void initView() {
@@ -194,6 +205,7 @@ public class ChatActivity extends BaseActivity {
                 dialog.show();
             }
         });
+        mInputEditText = mInputView.getEditText();
     }
 
     private void setToolbarTitle() {
@@ -428,7 +440,10 @@ public class ChatActivity extends BaseActivity {
                         intent.putExtra(EaseConstant.EXTRA_IS_INCOMING_CALL, false);
                         startActivity(intent);
                         break;
-
+                    case R.id.menu_clear_message:
+                        mConversation.clearAllMessages();
+                        mMessageListView.refresh();
+                        break;
                     case R.id.menu_group_detail:
                         intent.setClass(ChatActivity.this, GroupDetailsActivity.class);
                         intent.putExtra(EaseConstant.EXTRA_GROUP_ID, toChatUsername);
@@ -853,6 +868,22 @@ public class ChatActivity extends BaseActivity {
         }
     }
 
+    @Override public void finish() {
+        /**
+         * 判断聊天输入框内容是否为空，不为空就保存输入框内容到{@link EMConversation}的扩展中
+         * 调用{@link ConversationExtUtils#setConversationDraft(EMConversation, String)}方法
+         */
+        String draft = mInputEditText.getText().toString().trim();
+        if (!TextUtils.isEmpty(draft)) {
+            // 将输入框的内容保存为草稿
+            ConversationExtUtils.setConversationDraft(mConversation, draft);
+        } else {
+            // 清空会话对象扩展中保存的草稿
+            ConversationExtUtils.setConversationDraft(mConversation, "");
+        }
+        super.finish();
+    }
+
     /**
      * Group change listener
      */
@@ -865,6 +896,16 @@ public class ChatActivity extends BaseActivity {
         @Override public void onGroupDestroyed(String s, String s1) {
             super.onGroupDestroyed(s, s1);
             finish();
+        }
+
+        @Override public void onMemberJoined(String groupId, String member) {
+            super.onMemberJoined(groupId, member);
+            mMessageListView.refresh();
+        }
+
+        @Override public void onMemberExited(String groupId, String member) {
+            super.onMemberExited(groupId, member);
+            mMessageListView.refresh();
         }
     }
 

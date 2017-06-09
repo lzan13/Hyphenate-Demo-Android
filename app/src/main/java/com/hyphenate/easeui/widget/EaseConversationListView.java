@@ -10,10 +10,14 @@ import android.util.AttributeSet;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMGroup;
+import com.hyphenate.chatuidemo.Constant;
+import com.hyphenate.chatuidemo.chat.ConversationExtUtils;
+import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.adapter.EaseConversationListAdapter;
 import com.hyphenate.easeui.model.EaseUser;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -77,18 +81,10 @@ public class EaseConversationListView extends RecyclerView {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         setLayoutManager(layoutManager);
 
-        if(comparator == null){
-            comparator = new Comparator<EMConversation>() {
-                @Override public int compare(EMConversation o1, EMConversation o2) {
-                    return Long.valueOf(o2.getLastMessage().getMsgTime()).compareTo(o1.getLastMessage().getMsgTime());
-                }
-            };
-        }
-
-        mAdapter = new EaseConversationListAdapter(getContext(), comparator);
+        mAdapter = new EaseConversationListAdapter(getContext(), mConversationList);
         setAdapter(mAdapter);
 
-        mAdapter.edit().replaceAll(mConversationList).commit();
+        mAdapter.refreshList();
     }
 
     /**
@@ -98,14 +94,14 @@ public class EaseConversationListView extends RecyclerView {
     public void filter(String cs) {
         if(cs == null)
             cs = "";
-        mAdapter.edit().replaceAll(getFilterList(cs)).commit();
+        mAdapter.getFilter().filter(cs);
     }
 
     Handler mHandler = new Handler(){
         @Override public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if(msg.what == MSG_REFRESH_ADAPTER_DATA){
-                mAdapter.edit().replaceAll(loadConversationList()).commit();
+                mAdapter.refreshList();
             }
         }
     };
@@ -114,6 +110,12 @@ public class EaseConversationListView extends RecyclerView {
      * Refresh conversations list view
      */
     public void refresh() {
+        if(mConversationList == null){
+            mConversationList = loadConversationList();
+        }else{
+            mConversationList.clear();
+            mConversationList.addAll(loadConversationList());
+        }
         mHandler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
     }
 
@@ -122,7 +124,7 @@ public class EaseConversationListView extends RecyclerView {
      * @param position
      */
     public EMConversation getItem(int position){
-        return mAdapter.getItem(position);
+        return mConversationList.get(position);
     }
 
     /**
@@ -139,22 +141,65 @@ public class EaseConversationListView extends RecyclerView {
      */
     protected synchronized List<EMConversation> loadConversationList() {
         // get all conversations
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        if (mConversationList == null) {
-            mConversationList = new ArrayList<>(conversations.values());
-        } else {
-            mConversationList.clear();
-            mConversationList.addAll(conversations.values());
+        //Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+        //if (mConversationList == null) {
+        //    mConversationList = new ArrayList<>(conversations.values());
+        //} else {
+        //    mConversationList.clear();
+        //    mConversationList.addAll(conversations.values());
+        //}
+        //Iterator iterator = mConversationList.iterator();
+        //while (iterator.hasNext()){
+        //    EMConversation conversation = (EMConversation) iterator.next();
+        //    if(conversation.getAllMessages().size() == 0 || (mHiddenList != null && mHiddenList.contains(conversation.conversationId()))){
+        //        //remove the conversation which messages size == 0
+        //        iterator.remove();
+        //    }
+        //}
+        //return mConversationList;
+
+        Map<String, EMConversation> conversations =
+                EMClient.getInstance().chatManager().getAllConversations();
+        if (conversations.containsKey(Constant.CONVERSATION_NAME_APPLY)) {
+            conversations.remove(Constant.CONVERSATION_NAME_APPLY);
         }
-        Iterator iterator = mConversationList.iterator();
-        while (iterator.hasNext()){
-            EMConversation conversation = (EMConversation) iterator.next();
-            if(conversation.getAllMessages().size() == 0 || (mHiddenList != null && mHiddenList.contains(conversation.conversationId()))){
-                //remove the conversation which messages size == 0
-                iterator.remove();
+        List<EMConversation> list = new ArrayList<>();
+        list.addAll(conversations.values());
+        //Iterator iterator = list.iterator();
+        //while (iterator.hasNext()){
+        //    EMConversation conversation = (EMConversation) iterator.next();
+        //    if(conversation.getAllMessages().size() == 0 || (mHiddenList != null && mHiddenList.contains(conversation.conversationId()))){
+        //        //remove the conversation which messages size == 0
+        //        iterator.remove();
+        //    }
+        //}
+        // 使用Collectons的sort()方法 对会话列表进行排序
+        Collections.sort(list, new Comparator<EMConversation>() {
+            @Override public int compare(EMConversation lhs, EMConversation rhs) {
+                /**
+                 * 根据会话扩展中的时间进行排序
+                 * 通过{@link ConversationExtUtils#getConversationLastTime(EMConversation)} 获取时间
+                 */
+                if (lhs.getLastMessage().getMsgTime()>rhs.getLastMessage().getMsgTime()) {
+                    return -1;
+                } else if (lhs.getLastMessage().getMsgTime()<rhs.getLastMessage().getMsgTime()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        // 将列表排序之后，要重新将置顶的item设置到顶部
+        List<EMConversation> conversationList = new ArrayList<>();
+        int count = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (ConversationExtUtils.getConversationPushpin(list.get(i))) {
+                conversationList.add(count, list.get(i));
+                count++;
+            } else {
+                conversationList.add(list.get(i));
             }
         }
-        return mConversationList;
+        return conversationList;
     }
 
     protected synchronized  List<EMConversation> getFilterList(String query){

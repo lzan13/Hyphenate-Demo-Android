@@ -504,7 +504,7 @@ public class GroupDetailsActivity extends BaseActivity {
 
             @Override
             public Object onRequest() throws HyphenateException {
-                group = EMClient.getInstance().groupManager().getGroupFromServer(groupId);
+                group = EMClient.getInstance().groupManager().getGroupFromServer(groupId, true);
                 return null;
             }
 

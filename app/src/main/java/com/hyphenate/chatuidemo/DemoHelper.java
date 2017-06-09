@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.hyphenate.EMCallBack;
@@ -15,6 +16,7 @@ import com.hyphenate.EMError;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMMessage.ChatType;
 import com.hyphenate.chat.EMOptions;
@@ -106,6 +108,7 @@ public class DemoHelper {
 
         if (isMainProcess()) {
             EMLog.d(TAG, "------- init hyphenate start --------------");
+            PreferenceManager.init(context);
             //init hyphenate sdk with options
             EMClient.getInstance().init(context, initOptions());
             // init call options
@@ -114,7 +117,6 @@ public class DemoHelper {
             EMClient.getInstance().setDebugMode(true);
             //init EaseUI if you want to use it
             EaseUI.getInstance().init(context);
-            PreferenceManager.init(context);
             //init user manager
             getUserManager().init(context);
             //init message notifier
@@ -135,7 +137,26 @@ public class DemoHelper {
         EMOptions options = new EMOptions();
 
         // Set appkey, not need set, if AndroidManifest has set
-        //options.setAppKey("easemob-demo#chatdemoui");
+        options.setAppKey("easemob-demo#chatdemoui");
+
+        if (!TextUtils.isEmpty(PreferenceManager.getInstance().getIMServer()) && !TextUtils.isEmpty(
+                PreferenceManager.getInstance().getRestServer())) {
+            // Whether to start the DNS information configuration, if it is privatization deployment, here to set to false
+            options.enableDNSConfig(false);
+            // set private im server
+            options.setIMServer(PreferenceManager.getInstance().getIMServer());
+            // set private im port
+            String port = PreferenceManager.getInstance().getIMPort();
+            if (!TextUtils.isEmpty(port)) {
+                options.setImPort(Integer.valueOf(port));
+            }
+            // set private rest server and port
+            options.setRestServer(PreferenceManager.getInstance().getRestServer());
+        }
+        if (!TextUtils.isEmpty(PreferenceManager.getInstance().getCustomAppkey())) {
+            // set Appkey
+            options.setAppKey(PreferenceManager.getInstance().getCustomAppkey());
+        }
 
         // change to need confirm contact invitation
         options.setAcceptInvitationAlways(false);
@@ -144,14 +165,15 @@ public class DemoHelper {
         // set if need delivery ack
         options.setRequireDeliveryAck(false);
         // set auto accept group invitation
-        SharedPreferences preferences =
-                android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
-        options.setAutoAcceptGroupInvitation(preferences.getBoolean(
-                mContext.getString(R.string.em_pref_key_accept_group_invite_automatically), false));
-
+        SharedPreferences preferences = android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+        options.setAutoAcceptGroupInvitation(
+                preferences.getBoolean(mContext.getString(R.string.em_pref_key_accept_group_invite_automatically), false));
+        // set message crypto algorithm
+        options.setCryptoAlgorithm(EMOptions.EM_CRYPTO_ALGORITHM.EM_CRYPTO_AES);
         //set gcm project number
         options.setGCMNumber("324169311137");
-
+        //you need apply & set your own id if you want to use Mi push notification
+        options.setMipushConfig("2882303761517426801", "5381742660801");
         return options;
     }
 
@@ -200,8 +222,7 @@ public class DemoHelper {
             String msgId = s2 + s + EMClient.getInstance().getCurrentUser();
             EMMessage message = EMClient.getInstance().chatManager().getMessage(msgId);
             if (message != null) {
-                message.setAttribute(Constant.MESSAGE_ATTR_REASON,
-                        " receive invitation to join the group：" + s1);
+                message.setAttribute(Constant.MESSAGE_ATTR_REASON, " receive invitation to join the group：" + s1);
                 message.setAttribute(Constant.MESSAGE_ATTR_STATUS, "");
                 message.setMsgTime(System.currentTimeMillis());
                 message.setLocalTime(message.getMsgTime());
@@ -211,13 +232,11 @@ public class DemoHelper {
             } else {
                 // Create message save application info
                 message = EMMessage.createReceiveMessage(EMMessage.Type.TXT);
-                EMTextMessageBody body =
-                        new EMTextMessageBody(" receive invitation to join the group：" + s1);
+                EMTextMessageBody body = new EMTextMessageBody(" receive invitation to join the group：" + s1);
                 message.addBody(body);
                 message.setAttribute(Constant.MESSAGE_ATTR_GROUP_ID, s);
                 message.setAttribute(Constant.MESSAGE_ATTR_USERNAME, s2);
-                message.setAttribute(Constant.MESSAGE_ATTR_REASON,
-                        " receive invitation to join the group：" + s1);
+                message.setAttribute(Constant.MESSAGE_ATTR_REASON, " receive invitation to join the group：" + s1);
                 message.setAttribute(Constant.MESSAGE_ATTR_TYPE, 1);
                 message.setAttribute(Constant.MESSAGE_ATTR_GROUP_TYPE, 0);
                 message.setFrom(Constant.CONVERSATION_NAME_APPLY);
@@ -246,8 +265,7 @@ public class DemoHelper {
                 message.addBody(body);
                 message.setAttribute(Constant.MESSAGE_ATTR_GROUP_ID, s);
                 message.setAttribute(Constant.MESSAGE_ATTR_USERNAME, s2);
-                message.setAttribute(Constant.MESSAGE_ATTR_REASON,
-                        s2 + " Apply to join public group：" + s1);
+                message.setAttribute(Constant.MESSAGE_ATTR_REASON, s2 + " Apply to join public group：" + s1);
                 message.setAttribute(Constant.MESSAGE_ATTR_TYPE, 1);
                 message.setFrom(Constant.CONVERSATION_NAME_APPLY);
                 message.setAttribute(Constant.MESSAGE_ATTR_GROUP_TYPE, 1);
@@ -402,7 +420,31 @@ public class DemoHelper {
             EMClient.getInstance().chatManager().saveMessage(msg);
 
             getNotifier().vibrateAndPlayTone(null);
+        }
 
+        @Override public void onMemberJoined(String groupId, String member) {
+            super.onMemberJoined(groupId, member);
+            EMMessage message = EMMessage.createReceiveMessage(EMMessage.Type.TXT);
+            message.setChatType(ChatType.GroupChat);
+            message.setFrom(member);
+            message.setTo(groupId);
+            message.setStatus(EMMessage.Status.SUCCESS);
+            EMTextMessageBody body = new EMTextMessageBody("I'm Joined! haha");
+            message.addBody(body);
+            EMClient.getInstance().chatManager().saveMessage(message);
+        }
+
+        @Override public void onMemberExited(String groupId, String member) {
+            super.onMemberExited(groupId, member);
+            EMMessage message = EMMessage.createReceiveMessage(EMMessage.Type.TXT);
+            message.setChatType(ChatType.GroupChat);
+            message.setFrom(member);
+            message.setTo(groupId);
+            message.setMsgId(System.currentTimeMillis() + "001");
+            message.setStatus(EMMessage.Status.SUCCESS);
+            EMTextMessageBody body = new EMTextMessageBody("I'm leaving! Don't forget me!");
+            message.addBody(body);
+            EMClient.getInstance().chatManager().saveMessage(message);
         }
     }
 
@@ -415,66 +457,64 @@ public class DemoHelper {
             }
         });
         //set notification options, will use default if you don't set it
-        getNotifier().setNotificationInfoProvider(
-                new MessageNotifier.EaseNotificationInfoProvider() {
+        getNotifier().setNotificationInfoProvider(new MessageNotifier.EaseNotificationInfoProvider() {
 
-                    @Override public String getTitle(EMMessage message) {
-                        //you can update title here
-                        return null;
-                    }
+            @Override public String getTitle(EMMessage message) {
+                //you can update title here
+                return null;
+            }
 
-                    @Override public int getSmallIcon(EMMessage message) {
-                        //you can update icon here
-                        return 0;
-                    }
+            @Override public int getSmallIcon(EMMessage message) {
+                //you can update icon here
+                return 0;
+            }
 
-                    @Override public String getDisplayedText(EMMessage message) {
-                        // be used on notification bar, different text according the message type.
-                        String ticker = EaseCommonUtils.getMessageDigest(message, mContext);
-                        if (message.getType() == EMMessage.Type.TXT) {
-                            ticker = ticker.replaceAll("\\[.{2,3}\\]", "[Emoticon]");
-                        }
-                        EaseUser user = getUserInfo(message.getFrom());
-                        if (user != null) {
-                            return user.getEaseNickname() + ": " + ticker;
+            @Override public String getDisplayedText(EMMessage message) {
+                // be used on notification bar, different text according the message type.
+                String ticker = EaseCommonUtils.getMessageDigest(message, mContext);
+                if (message.getType() == EMMessage.Type.TXT) {
+                    ticker = ticker.replaceAll("\\[.{2,3}\\]", "[Emoticon]");
+                }
+                EaseUser user = getUserInfo(message.getFrom());
+                if (user != null) {
+                    return user.getEaseNickname() + ": " + ticker;
+                } else {
+                    return message.getFrom() + ": " + ticker;
+                }
+            }
+
+            @Override public String getLatestText(EMMessage message, int fromUsersNum, int messageNum) {
+                // here you can customize the text.
+                // return fromUsersNum + "contacts send " + messageNum + "messages to you";
+                return null;
+            }
+
+            @Override public Intent getLaunchIntent(EMMessage message) {
+                // you can set what activity you want display when user click the notification
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                // open calling activity if there is call
+                if (isVideoCalling) {
+                    intent = new Intent(mContext, VideoCallActivity.class);
+                } else if (isVoiceCalling) {
+                    intent = new Intent(mContext, VoiceCallActivity.class);
+                } else {
+                    ChatType chatType = message.getChatType();
+                    if (chatType == ChatType.Chat) { // single chat message
+                        intent.putExtra("userId", message.getFrom());
+                        intent.putExtra("chatType", Constant.CHATTYPE_SINGLE);
+                    } else { // group chat message
+                        // message.getTo() is the group id
+                        intent.putExtra("userId", message.getTo());
+                        if (chatType == ChatType.GroupChat) {
+                            intent.putExtra("chatType", Constant.CHATTYPE_GROUP);
                         } else {
-                            return message.getFrom() + ": " + ticker;
+                            intent.putExtra("chatType", Constant.CHATTYPE_CHATROOM);
                         }
                     }
-
-                    @Override public String getLatestText(EMMessage message, int fromUsersNum,
-                            int messageNum) {
-                        // here you can customize the text.
-                        // return fromUsersNum + "contacts send " + messageNum + "messages to you";
-                        return null;
-                    }
-
-                    @Override public Intent getLaunchIntent(EMMessage message) {
-                        // you can set what activity you want display when user click the notification
-                        Intent intent = new Intent(mContext, ChatActivity.class);
-                        // open calling activity if there is call
-                        if (isVideoCalling) {
-                            intent = new Intent(mContext, VideoCallActivity.class);
-                        } else if (isVoiceCalling) {
-                            intent = new Intent(mContext, VoiceCallActivity.class);
-                        } else {
-                            ChatType chatType = message.getChatType();
-                            if (chatType == ChatType.Chat) { // single chat message
-                                intent.putExtra("userId", message.getFrom());
-                                intent.putExtra("chatType", Constant.CHATTYPE_SINGLE);
-                            } else { // group chat message
-                                // message.getTo() is the group id
-                                intent.putExtra("userId", message.getTo());
-                                if (chatType == ChatType.GroupChat) {
-                                    intent.putExtra("chatType", Constant.CHATTYPE_GROUP);
-                                } else {
-                                    intent.putExtra("chatType", Constant.CHATTYPE_CHATROOM);
-                                }
-                            }
-                        }
-                        return intent;
-                    }
-                });
+                }
+                return intent;
+            }
+        });
         EaseUI.getInstance().setSettingsProvider(new EaseUI.EaseSettingsProvider() {
             @Override public boolean isMsgNotifyAllowed(EMMessage message) {
                 return DemoModel.getInstance(mContext).isNotification();
@@ -515,8 +555,7 @@ public class DemoHelper {
      */
     private void setCallReceiverListener() {
         // Set the call broadcast listener to filter the action
-        IntentFilter callFilter = new IntentFilter(
-                EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
+        IntentFilter callFilter = new IntentFilter(EMClient.getInstance().callManager().getIncomingCallBroadcastAction());
         if (mCallReceiver == null) {
             mCallReceiver = new CallReceiver();
         }
@@ -540,9 +579,7 @@ public class DemoHelper {
      */
     public void removeCallStateChangeListener() {
         if (mCallStateChangeListener != null) {
-            EMClient.getInstance()
-                    .callManager()
-                    .removeCallStateChangeListener(mCallStateChangeListener);
+            EMClient.getInstance().callManager().removeCallStateChangeListener(mCallStateChangeListener);
             mCallStateChangeListener = null;
         }
     }
@@ -602,8 +639,7 @@ public class DemoHelper {
 
                     //get extension attribute if you need
                     //message.getStringAttribute("");
-                    EMLog.d(TAG, String.format("CmdMessage：action:%s,message:%s", action,
-                            message.toString()));
+                    EMLog.d(TAG, String.format("CmdMessage：action:%s,message:%s", action, message.toString()));
                 }
             }
 
@@ -760,12 +796,11 @@ public class DemoHelper {
         Iterator i = l.iterator();
         PackageManager pm = mContext.getPackageManager();
         while (i.hasNext()) {
-            ActivityManager.RunningAppProcessInfo info =
-                    (ActivityManager.RunningAppProcessInfo) (i.next());
+            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
             try {
                 if (info.pid == pID) {
-                    CharSequence c = pm.getApplicationLabel(
-                            pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
+                    CharSequence c =
+                            pm.getApplicationLabel(pm.getApplicationInfo(info.processName, PackageManager.GET_META_DATA));
                     // Log.d("Process", "Id: "+ info.pid +" ProcessName: "+
                     // info.processName +"  Label: "+c.toString());
                     // processName = c.toString();

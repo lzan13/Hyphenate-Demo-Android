@@ -1,9 +1,11 @@
 package com.hyphenate.chatuidemo.chat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -100,23 +102,55 @@ public class ConversationListFragment extends Fragment {
 
             @Override public void onItemLongClick(View view, int position) {
                 mItemLongClickPos = position;
-                mConversationListView.showContextMenu();
+                itemLongClick();
             }
         });
     }
-
-    @Override public boolean onContextItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.delete_conversation){
-            EMConversation tobeDeleteCons = mConversationListView.getItem(mItemLongClickPos);
-            if(tobeDeleteCons == null){
-                return true;
-            }
-            EMClient.getInstance().chatManager().deleteConversation(tobeDeleteCons.conversationId(), true);
-            refresh();
-
-            ((MainActivity)getActivity()).updateUnreadMsgLabel();
+    /**
+     * Item项长按事件
+     */
+    public void itemLongClick() {
+        final EMConversation conversation = mConversationListView.getItem(mItemLongClickPos);
+        final boolean isTop = ConversationExtUtils.getConversationPushpin(conversation);
+        // 根据当前会话不同的状态来显示不同的长按菜单
+        List<String> menuList = new ArrayList<String>();
+        if (isTop) {
+            menuList.add("Conversation pushpin cancel");
+        } else {
+            menuList.add("Conversation pushpin");
         }
-        return true;
+        menuList.add("Delete conversation");
+
+        String[] menus = new String[menuList.size()];
+        menuList.toArray(menus);
+
+        // 创建并显示 ListView 的长按弹出菜单，并设置弹出菜单 Item的点击监听
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        // 弹出框标题
+        // alertDialogBuilder.setTitle(R.string.dialog_title_conversation);
+        alertDialogBuilder.setItems(menus, new DialogInterface.OnClickListener() {
+            @Override public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        // 根据当前状态设置会话是否置顶
+                        if (isTop) {
+                            ConversationExtUtils.setConversationPushpin(conversation, false);
+                        } else {
+                            ConversationExtUtils.setConversationPushpin(conversation, true);
+                        }
+                        refresh();
+                        break;
+                    case 1:
+                        // 删除当前会话，第二个参数表示是否删除此会话的消息
+                        EMClient.getInstance()
+                                .chatManager()
+                                .deleteConversation(conversation.conversationId(), false);
+                        refresh();
+                        break;
+                }
+            }
+        });
+        alertDialogBuilder.show();
     }
 
     protected EMConnectionListener connectionListener = new EMConnectionListener() {

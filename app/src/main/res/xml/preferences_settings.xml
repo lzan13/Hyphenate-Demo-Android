@@ -4,13 +4,13 @@
     >
 
     <!--About-->
-    <PreferenceCategory
-        android:title="@string/em_pref_about">
-        <Preference
-            android:id="@+id/preference"
-            android:key="@string/em_pref_key_about"
-            android:title="@string/em_pref_about_version"/>
-    </PreferenceCategory>
+    <!--<PreferenceCategory-->
+        <!--android:title="@string/em_pref_about">-->
+        <!--<Preference-->
+            <!--android:id="@+id/preference"-->
+            <!--android:key="@string/em_pref_key_about"-->
+            <!--android:title="@string/em_pref_about_version"/>-->
+    <!--</PreferenceCategory>-->
 
     <!-- Notifications -->
     <PreferenceCategory

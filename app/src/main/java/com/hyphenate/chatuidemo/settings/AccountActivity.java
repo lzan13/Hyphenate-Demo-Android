@@ -154,7 +154,7 @@ public class AccountActivity extends BaseActivity {
         alertDialog.show();
     }
 
-    @OnClick({R.id.btn_sign_out, R.id.btn_send, R.id.btn_verify}) void signOut(View view) {
+    @OnClick({R.id.btn_sign_out, R.id.btn_send}) void signOut(View view) {
         switch (view.getId()) {
             case R.id.btn_sign_out:
 
@@ -188,14 +188,6 @@ public class AccountActivity extends BaseActivity {
             case R.id.btn_send:
                 send();
                 break;
-            case R.id.btn_verify:
-                DemoHelper.getInstance().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        verify();
-                    }
-                });
-                break;
             default:
                 break;
         }
@@ -213,51 +205,6 @@ public class AccountActivity extends BaseActivity {
         }
     }
 
-    void verify() {
-        // loadAllMessages
-        String msgId = "";
-        List<EMMessage> msgs;
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation("gm1");
-        do {
-            msgs = conversation.loadMoreMsgFromDB(msgId, 100);
-            if (msgs != null && msgs.size() > 0) {
-                msgId = msgs.get(msgs.size() -1).getMsgId();
-            }
-        } while(msgs.size() > 0);
-
-        final List<EMMessage> allMessages =  conversation.getAllMessages();
-        EMMessage prev = null;
-        boolean result = true;
-        for (EMMessage msg : allMessages) {
-            if (prev != null) {
-                String prevText = ((EMTextMessageBody) prev.getBody()).getMessage();
-                String msgText = ((EMTextMessageBody)prev.getBody()).getMessage();
-                if ((new Integer(prevText)).intValue() > (new Integer(msgText)).intValue()) {
-                    EMLog.d("ASSERT FAIL:", "disorder, prev:" + prevText + " msg:" + msgText);
-                    result = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Snackbar.make(snackbar_action, "verify fail", Snackbar.LENGTH_INDEFINITE).show();
-
-                        }
-                    });
-                    break;
-                }
-            }
-            prev = msg;
-        }
-
-        if (result) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Snackbar.make(snackbar_action, "verify ok, allMessage.size:" + allMessages.size(), Snackbar.LENGTH_INDEFINITE).show();
-                }
-            });
-        }
-
-    }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {

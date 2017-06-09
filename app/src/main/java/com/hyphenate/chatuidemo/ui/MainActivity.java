@@ -460,6 +460,7 @@ public class MainActivity extends BaseActivity {
             refreshApply();
             refreshContacts();
         }
+
     }
 
     private class DefaultGroupChangeListener extends GroupChangeListener {
@@ -514,6 +515,16 @@ public class MainActivity extends BaseActivity {
                     updateUnreadMsgLabel();
                 }
             });
+        }
+
+        @Override public void onMemberJoined(String groupId, String member) {
+            super.onMemberJoined(groupId, member);
+            refreshConversation();
+        }
+
+        @Override public void onMemberExited(String groupId, String member) {
+            super.onMemberExited(groupId, member);
+            refreshConversation();
         }
     }
 

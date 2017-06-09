@@ -41,7 +41,7 @@ public class SettingsPreference extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(aboutKey)) {
-            checkVersion();
+            //checkVersion();
         } else if (key.equals(displayNameKey)) {
             checkDisplayName();
         } else if (key.equals(autoAcceptKey)) {
@@ -52,9 +52,9 @@ public class SettingsPreference extends PreferenceFragment
     /**
      * check version
      */
-    private void checkVersion() {
-        mAboutVersionPreference.setSummary(EMClient.getInstance().VERSION);
-    }
+    //private void checkVersion() {
+    //    mAboutVersionPreference.setSummary(EMClient.getInstance().VERSION);
+    //}
 
     /**
      * check display name preference content
@@ -78,7 +78,7 @@ public class SettingsPreference extends PreferenceFragment
 
     @Override public void onResume() {
         super.onResume();
-        checkVersion();
+        //checkVersion();
         checkDisplayName();
         getPreferenceManager().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
