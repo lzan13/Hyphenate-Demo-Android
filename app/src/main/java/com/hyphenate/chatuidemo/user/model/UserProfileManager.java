@@ -39,7 +39,6 @@ public class UserProfileManager {
 
     /**
      * get contact list from cache(memory or db)
-     * @return
      */
     public Map<String, UserEntity> getContactList() {
         if (mUsersMap.isEmpty()) {
@@ -50,7 +49,6 @@ public class UserProfileManager {
 
     /**
      * set contact list to cache
-     * @param entityList
      */
     public void setContactList(List<UserEntity> entityList) {
         EMLog.d("lzan13", "save contact list -1- size " + entityList.size());
@@ -64,7 +62,6 @@ public class UserProfileManager {
 
     /**
      * save a contact to cache
-     * @param userEntity
      */
     public void saveContact(UserEntity userEntity) {
         if (mUsersMap != null) {
@@ -88,7 +85,6 @@ public class UserProfileManager {
     /**
      * async fetch contact list from server,
      * will get id list from hyphenate and get details from parse server
-     * @param callback
      */
     public void fetchContactsFromServer(final EMCallBack callback) {
         new Thread(new Runnable() {
@@ -111,9 +107,16 @@ public class UserProfileManager {
                         @Override public void onSuccess(List<UserEntity> uList) {
                             EMLog.d("lzan13", "sync contact list -2- size " + uList.size());
                             // save the contact list to cache
-                            setContactList(uList);
-                            if (callback != null) {
-                                callback.onSuccess();
+                            if (uList.size() < entityList.size()) {
+                                setContactList(entityList);
+                                if (callback != null) {
+                                    callback.onError(-1, "sync contact info error");
+                                }
+                            } else {
+                                setContactList(uList);
+                                if (callback != null) {
+                                    callback.onSuccess();
+                                }
                             }
                         }
 
@@ -165,7 +168,6 @@ public class UserProfileManager {
 
     /**
      * get the current logged user info
-     * @return
      */
     public synchronized UserEntity getCurrentUserInfo() {
         if (currentUser == null) {
@@ -213,14 +215,12 @@ public class UserProfileManager {
         return avatarUrl;
     }
 
-
     public void asyncGetUserInfo(final String username, final EMValueCallBack<UserEntity> callback) {
         ParseManager.getInstance().asyncGetUserInfo(username, callback);
     }
 
     private void setCurrentUserNick(String nickname) {
         getCurrentUserInfo().setNickname(nickname);
-
     }
 
     private void setCurrentUserAvatar(String avatar) {
@@ -238,7 +238,6 @@ public class UserProfileManager {
 
     /**
      * convert username to user entity
-     * @return
      */
     public static List<UserEntity> convertContactList(List<String> list) {
 

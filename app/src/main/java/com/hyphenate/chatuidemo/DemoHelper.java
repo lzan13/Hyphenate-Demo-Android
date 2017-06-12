@@ -169,7 +169,7 @@ public class DemoHelper {
         options.setAutoAcceptGroupInvitation(
                 preferences.getBoolean(mContext.getString(R.string.em_pref_key_accept_group_invite_automatically), false));
         // set message crypto algorithm
-        options.setCryptoAlgorithm(EMOptions.EM_CRYPTO_ALGORITHM.EM_CRYPTO_AES);
+        //options.setCryptoAlgorithm(EMOptions.EM_CRYPTO_ALGORITHM.EM_CRYPTO_AES);
         //set gcm project number
         options.setGCMNumber("324169311137");
         //you need apply & set your own id if you want to use Mi push notification
