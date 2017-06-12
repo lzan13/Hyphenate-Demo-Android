@@ -50,7 +50,7 @@ public class InviteMembersActivity extends BaseActivity {
     static InviteMembersActivity instance;
     private Snackbar snackbar;
     private boolean isCreate;
-    public List<String> selectedMembers;
+    public List<String> selectedMembers = new ArrayList<>();
     private String[] newMembers;
     private ProgressDialog progressDialog;
     String content, action;

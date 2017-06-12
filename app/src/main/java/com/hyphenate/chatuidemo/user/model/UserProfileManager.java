@@ -8,6 +8,7 @@ import com.hyphenate.chatuidemo.DemoHelper;
 import com.hyphenate.chatuidemo.PreferenceManager;
 import com.hyphenate.chatuidemo.user.model.parse.ParseManager;
 import com.hyphenate.exceptions.HyphenateException;
+import com.hyphenate.util.EMLog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +53,12 @@ public class UserProfileManager {
      * @param entityList
      */
     public void setContactList(List<UserEntity> entityList) {
+        EMLog.d("lzan13", "save contact list -1- size " + entityList.size());
         mUsersMap.clear();
         for (UserEntity userEntity : entityList) {
             mUsersMap.put(userEntity.getUsername(), userEntity);
         }
+        EMLog.d("lzan13", "save contact list -2- size " + entityList.size());
         UserDao.getInstance(mContext).saveContactList(entityList);
     }
 
@@ -94,6 +97,8 @@ public class UserProfileManager {
                 try {
                     hyphenateIdList = EMClient.getInstance().contactManager().getAllContactsFromServer();
 
+                    EMLog.d("lzan13", "sync contact list -1- size " + hyphenateIdList.size());
+
                     getContactList().clear();
                     final List<UserEntity> entityList = new ArrayList<>();
                     for (String userId : hyphenateIdList) {
@@ -104,6 +109,7 @@ public class UserProfileManager {
                     getContactsInfoFromServer(hyphenateIdList, new EMValueCallBack<List<UserEntity>>() {
 
                         @Override public void onSuccess(List<UserEntity> uList) {
+                            EMLog.d("lzan13", "sync contact list -2- size " + uList.size());
                             // save the contact list to cache
                             setContactList(uList);
                             if (callback != null) {

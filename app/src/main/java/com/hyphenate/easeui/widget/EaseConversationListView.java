@@ -51,16 +51,6 @@ public class EaseConversationListView extends RecyclerView {
 
     private void init(Context context, AttributeSet attrs) {
         this.mContext = context;
-//        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.EaseConversationList);
-//        primaryColor = ta.getColor(R.styleable.EaseConversationList_cvsListPrimaryTextColor, getResources().getColor(R.color.list_itease_primary_color));
-//        secondaryColor = ta.getColor(R.styleable.EaseConversationList_cvsListSecondaryTextColor, getResources().getColor(R.color.list_itease_secondary_color));
-//        timeColor = ta.getColor(R.styleable.EaseConversationList_cvsListTimeTextColor, getResources().getColor(R.color.list_itease_secondary_color));
-//        primarySize = ta.getDimensionPixelSize(R.styleable.EaseConversationList_cvsListPrimaryTextSize, 0);
-//        secondarySize = ta.getDimensionPixelSize(R.styleable.EaseConversationList_cvsListSecondaryTextSize, 0);
-//        timeSize = ta.getDimension(R.styleable.EaseConversationList_cvsListTimeTextSize, 0);
-
-//        ta.recycle();
-
     }
 
     /**
@@ -78,7 +68,8 @@ public class EaseConversationListView extends RecyclerView {
      */
     public void init(Comparator<EMConversation> comparator) {
         mConversationList = loadConversationList();
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        //LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new MyLinearLayoutManager(getContext());
         setLayoutManager(layoutManager);
 
         mAdapter = new EaseConversationListAdapter(getContext(), mConversationList);
@@ -112,11 +103,13 @@ public class EaseConversationListView extends RecyclerView {
     public void refresh() {
         if(mConversationList == null){
             mConversationList = loadConversationList();
+            mAdapter = new EaseConversationListAdapter(getContext(), mConversationList);
+            setAdapter(mAdapter);
         }else{
             mConversationList.clear();
             mConversationList.addAll(loadConversationList());
+            mHandler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
         }
-        mHandler.sendEmptyMessage(MSG_REFRESH_ADAPTER_DATA);
     }
 
     /**

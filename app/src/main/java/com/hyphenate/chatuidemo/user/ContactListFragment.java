@@ -34,6 +34,7 @@ import com.hyphenate.easeui.EaseConstant;
 import com.hyphenate.easeui.widget.EaseListItemClickListener;
 import com.hyphenate.exceptions.HyphenateException;
 
+import com.hyphenate.util.EMLog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -258,6 +259,7 @@ public class ContactListFragment extends Fragment {
     public void refresh() {
 
         loadContacts();
+        EMLog.d("lzan13", "refresh contact list -1- size " + userList.size());
 
         if (unreadNumberView != null) {
             EMConversation conversation = EMClient.getInstance()

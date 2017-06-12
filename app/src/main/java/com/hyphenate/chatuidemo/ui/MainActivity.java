@@ -238,8 +238,10 @@ public class MainActivity extends BaseActivity {
                 });
             }
             //refresh ConversationListFragment
-            fragment = ((PagerAdapter) mViewPager.getAdapter()).getItem(1);
-            ((ConversationListFragment) fragment).refresh();
+            if (mCurrentPageIndex == 1) {
+                fragment = ((PagerAdapter) mViewPager.getAdapter()).getItem(1);
+                ((ConversationListFragment) fragment).refresh();
+            }
         }
 
         @Override public void onCmdMessageReceived(List<EMMessage> list) {

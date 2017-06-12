@@ -98,13 +98,6 @@ public class GroupDetailsActivity extends BaseActivity {
         groupId = getIntent().getStringExtra("groupId");
         groupIdView.setText(groupId);
 
-        group = EMClient.getInstance().groupManager().getGroup(groupId);
-
-        if (group == null) {
-            progressDialog.dismiss();
-            finish();
-        }
-
         initLocalView();
 
         updateGroupFromServer();
@@ -178,6 +171,12 @@ public class GroupDetailsActivity extends BaseActivity {
     }
 
     private void initLocalView() {
+        group = EMClient.getInstance().groupManager().getGroup(groupId);
+
+        if (group == null) {
+            progressDialog.dismiss();
+            finish();
+        }
         groupNameView.setText(group.getGroupName());
         groupDescView.setText(group.getDescription());
         memberSizeView.setText("(" + group.getMemberCount() + ")");
@@ -519,6 +518,11 @@ public class GroupDetailsActivity extends BaseActivity {
                 toolbar.removeView(progressBar);
             }
         });
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        initLocalView();
     }
 
     @Override protected void onDestroy() {
